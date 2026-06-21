@@ -4,6 +4,11 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const specs = require('./config/swagger');
 const authRoutes = require('./routes/auth.routes');
+const plansRoutes = require('./routes/plans.routes');
+const ticketsRoutes = require('./routes/tickets.routes');
+const paymentsRoutes = require('./routes/payments.routes');
+const notificationsRoutes = require('./routes/notifications.routes');
+const adminRoutes = require('./routes/admin.routes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -12,6 +17,11 @@ app.use(express.json());
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/auth', authRoutes);
+app.use('/plans', plansRoutes);
+app.use('/tickets', ticketsRoutes);
+app.use('/payments', paymentsRoutes);
+app.use('/notifications', notificationsRoutes);
+app.use('/admin', adminRoutes);
 
 app.get('/', (req, res) => {
   res.send('Local Church Ticket Booking System API is running! Visit /api-docs for documentation.');

@@ -1,10 +1,18 @@
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.SUPABASE_URL;
-// Use SUPABASE_PUBLISHABLE_KEY for auth operations
-// (SUPABASE_SECRET_KEY doesn't work with auth APIs)
-const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Publishable key: used for regular user operations (auth, etc.)
+const supabasePublishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
+const supabase = createClient(supabaseUrl, supabasePublishableKey);
 
-module.exports = supabase;
+// Service role key: used for admin/server-side operations that need to bypass RLS
+const supabaseServiceKey = process.env.SUPABASE_SECRET_KEY;
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+});
+
+module.exports = { supabase, supabaseAdmin };
