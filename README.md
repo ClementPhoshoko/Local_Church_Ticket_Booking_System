@@ -1,6 +1,6 @@
-# Booking Website — Project Plan
+# Local Church Ticket Booking System
 
-A full-stack booking platform built on **Supabase** (PostgreSQL + Auth + Edge Functions). Users can browse ticket plans, purchase tickets, receive booking confirmations via email and SMS, and view their bookings. Admins can manage plans, view all bookings, and inspect a full audit trail.
+A full-stack ticket booking platform for local churches, built with **Express.js** (backend) and **React** (frontend, coming soon), with **Supabase** (PostgreSQL + Auth) as the backend service.
 
 ---
 
@@ -14,9 +14,8 @@ A full-stack booking platform built on **Supabase** (PostgreSQL + Auth + Edge Fu
 6. [Phase 3 — Notifications](#phase-3--notifications)
 7. [Phase 4 — Admin](#phase-4--admin)
 8. [Row level security summary](#row-level-security-summary)
-9. [Edge functions](#edge-functions)
-10. [Environment variables](#environment-variables)
-11. [Getting started](#getting-started)
+9. [Environment variables](#environment-variables)
+10. [Getting started](#getting-started)
 
 ---
 
@@ -26,11 +25,12 @@ A full-stack booking platform built on **Supabase** (PostgreSQL + Auth + Edge Fu
 |---|---|
 | Database | PostgreSQL via Supabase |
 | Auth | Supabase Auth (JWT) |
-| Server functions | Supabase Edge Functions (Deno) |
-| Email | SendGrid / Resend |
-| SMS | Twilio / Africa's Talking |
-| Payments | PayFast / Stripe / Yoco |
-| API style | REST |
+| Backend API | Express.js (Node.js) |
+| Frontend | React (coming soon) |
+| API docs | Swagger / OpenAPI |
+| Email | EmailJS |
+| SMS | Twilio / Africa's Talking (coming soon) |
+| Payments | Mock Gateway (extendable to PayFast / Stripe / Yoco) |
 
 ---
 
@@ -75,39 +75,43 @@ Example: `100042 21062025` → `10004221062025`
 
 ```
 /
-├── supabase/
-│   ├── migrations/
-│   │   └── 001_booking_schema.sql      # Full schema, RLS, triggers
-│   └── functions/
-│       ├── send-email/index.ts         # Dispatches email notifications
-│       ├── send-sms/index.ts           # Dispatches SMS notifications
-│       ├── process-payment/index.ts    # Async payment confirmation
-│       └── notification-worker/index.ts # Polls queued notifications
-├── src/
-│   ├── controllers/
-│   │   ├── AuthController.ts
-│   │   ├── ProfileController.ts
-│   │   ├── PlanController.ts
-│   │   ├── TicketController.ts
-│   │   ├── PaymentController.ts
-│   │   ├── NotificationController.ts
-│   │   ├── AuditController.ts
-│   │   └── admin/
-│   │       ├── AdminPlanController.ts
-│   │       ├── AdminBookingController.ts
-│   │       ├── AdminUserController.ts
-│   │       ├── AdminTicketController.ts
-│   │       └── AdminNotificationController.ts
-│   ├── middleware/
-│   │   ├── auth.ts                     # JWT validation
-│   │   └── requireAdmin.ts             # is_admin() check
-│   └── routes/
-│       ├── auth.routes.ts
-│       ├── plans.routes.ts
-│       ├── tickets.routes.ts
-│       ├── payments.routes.ts
-│       ├── notifications.routes.ts
-│       └── admin.routes.ts
+├── server/
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── supabase.js       # Supabase client configuration
+│   │   │   └── swagger.js        # Swagger documentation setup
+│   │   ├── controllers/
+│   │   ├── AuthController.js # Authentication endpoints
+│   │   ├── ProfileController.js # Profile management endpoints
+│   │   ├── PlanController.js # Ticket plan endpoints
+│   │   ├── TicketController.js # Ticket booking endpoints
+│   │   ├── PaymentController.js # Payment endpoints
+│   │   ├── NotificationController.js # Notification endpoints
+│   │   ├── AdminBookingController.js # Admin booking endpoints
+│   │   ├── AdminUserController.js # Admin user endpoints
+│   │   ├── AdminTicketController.js # Admin ticket endpoints
+│   │   └── AuditController.js # Audit log endpoints
+│   │   ├── docs/
+│   │   │   └── full_schema.sql   # Database schema SQL
+│   │   ├── middleware/
+│   │   │   ├── auth.js           # JWT authentication middleware
+│   │   │   └── requireAdmin.js   # Admin check middleware
+│   │   ├── models/               # (Future: Data models)
+│   │   ├── routes/
+│   │   ├── auth.routes.js    # Auth API routes
+│   │   ├── plans.routes.js   # Ticket plan routes
+│   │   ├── tickets.routes.js # Ticket routes
+│   │   ├── payments.routes.js # Payment routes
+│   │   ├── notifications.routes.js # Notification routes
+│   │   └── admin.routes.js   # Admin API routes
+│   │   ├── services/
+│   │   │   └── emailjs.js        # EmailJS service for confirmations
+│   │   └── index.js              # Express app entry point
+│   ├── .env                      # Environment variables (gitignored)
+│   ├── .env.example              # Example environment variables
+│   ├── package.json
+│   └── package-lock.json
+├── .gitignore
 └── README.md
 ```
 
@@ -115,9 +119,9 @@ Example: `100042 21062025` → `10004221062025`
 
 ## Phase 1 — Authentication
 
-**Wizard:** Auth wizard
+**Status: Implemented ✓**
 
-Handles user registration, sign-in, session management, and profile updates. Email is stored and managed entirely by Supabase Auth. The `handle_new_user` trigger automatically creates a `profiles` row on sign-up using metadata passed at registration time — no separate API call is needed.
+Handles user registration, sign-in, session management, and profile updates.
 
 ### Routes
 
@@ -129,220 +133,114 @@ Handles user registration, sign-in, session management, and profile updates. Ema
 | `GET` | `/auth/me` | `ProfileController.me` | Return current user and profile |
 | `PATCH` | `/auth/me` | `ProfileController.update` | Update name or contact number |
 
-### Sign-up payload
+### API Documentation
 
-```json
-{
-  "email": "user@example.com",
-  "password": "••••••••",
-  "first_name": "Thabo",
-  "last_name": "Nkosi",
-  "contact_number": "+27821234567"
-}
-```
-
-`first_name`, `last_name`, and `contact_number` are passed as `raw_user_meta_data` to Supabase Auth and picked up by the `handle_new_user` trigger.
-
-### Notes
-
-- Email is auto-saved during sign-up and never stored in `profiles` (single source of truth in `auth.users`).
-- Contact number should be in international format, e.g. `+27821234567`.
-- JWT issued by Supabase Auth carries `user_metadata.role` — set to `"admin"` for admin users.
+Visit `http://localhost:3000/api-docs` for complete Swagger API documentation!
 
 ---
 
 ## Phase 2 — Booking
 
-Three wizards covering the full purchase flow: browse plans → create ticket → process payment.
+**Status: Implemented ✓**
+
+Three parts covering the full purchase flow: browse plans → create ticket → process payment.
 
 ---
 
-### Wizard 2a — Ticket plans
+### Part 2a — Ticket plans
 
 Manages the available ticket tiers. Admins create and update plans; authenticated users can read active plans only (enforced by RLS).
 
-#### Routes
+#### Implemented routes
 
 | Method | Path | Controller | Description |
 |---|---|---|---|
 | `GET` | `/plans` | `PlanController.list` | List all active plans |
 | `GET` | `/plans/:id` | `PlanController.get` | Get a single plan |
-| `POST` | `/admin/plans` | `AdminPlanController.create` | Create a plan (admin) |
-| `PATCH` | `/admin/plans/:id` | `AdminPlanController.update` | Update a plan (admin) |
-
-#### Notes
-
-- `price` is stored as `NUMERIC(10,2)`. Always pass as a string in JSON payloads to avoid floating-point drift.
-- Deactivating a plan sets `is_active = false` — existing tickets referencing the plan are unaffected.
-- Requires `requireAdmin` middleware on all `/admin/plans` routes.
+| `POST` | `/plans` | `PlanController.create` | Create a plan (requires admin) |
+| `PATCH` | `/plans/:id` | `PlanController.update` | Update a plan (requires admin) |
 
 ---
 
-### Wizard 2b — Ticket booking
+### Part 2b — Ticket booking
 
 Core booking record. Creates a ticket in `pending` status, then transitions to `confirmed` once payment succeeds.
 
-#### Routes
+#### Implemented routes
 
 | Method | Path | Controller | Description |
 |---|---|---|---|
-| `POST` | `/tickets` | `TicketController.create` | Create a pending ticket and initiate payment |
+| `POST` | `/tickets` | `TicketController.create` | Create a pending ticket |
 | `GET` | `/tickets` | `TicketController.list` | List the current user's tickets |
 | `GET` | `/tickets/:id` | `TicketController.get` | Get ticket detail including unique code |
 | `PATCH` | `/tickets/:id/cancel` | `TicketController.cancel` | Cancel a confirmed ticket |
 
-#### Ticket status machine
-
-```
-pending ──► confirmed ──► cancelled
-                └────────► refunded
-```
-
-#### Notes
-
-- `unique_code` is generated automatically by the `set_ticket_unique_code` DB trigger. Never set it manually.
-- Ticket status must only be changed server-side — RLS blocks direct client writes on the `status` column.
-- Cancellation sets `cancelled_at` timestamp and transitions status to `cancelled`.
-- Users can only see their own tickets (RLS: `user_id = auth.uid()`).
-
 ---
 
-### Wizard 2c — Payment
+### Part 2c — Payment
 
-Handles gateway integration and webhook processing. The webhook endpoint confirms or rejects the transaction and triggers the ticket confirmation flow.
+Handles gateway integration and webhook processing. Currently uses a mock gateway for testing.
 
-#### Routes
+#### Implemented routes
 
 | Method | Path | Controller | Description |
 |---|---|---|---|
-| `POST` | `/payments/initiate` | `PaymentController.initiate` | Create a transaction row and gateway session |
+| `POST` | `/payments/initiate` | `PaymentController.initiate` | Create a transaction record and gateway session |
 | `POST` | `/payments/webhook` | `PaymentController.webhook` | Gateway callback — updates transaction and ticket status |
 | `GET` | `/payments/:ticketId` | `PaymentController.get` | Get the transaction record for a ticket |
-
-#### Payment flow
-
-```
-Client → POST /payments/initiate
-       → Creates transactions row (status: pending)
-       → Returns gateway redirect URL
-
-Gateway → POST /payments/webhook (no JWT — public endpoint)
-        → Validates gateway signature
-        → Updates transaction.status = 'success'
-        → Updates ticket.status = 'confirmed'
-        → Triggers queue_booking_notifications
-```
-
-#### Notes
-
-- The `/payments/webhook` endpoint must be **excluded from JWT middleware** — payment gateways cannot provide a user token.
-- Always validate the gateway's HMAC signature before processing the webhook body.
-- The raw gateway response is stored in `transactions.gateway_payload` (JSONB) for dispute resolution.
-- On payment failure, `transaction.status = 'failed'` and `ticket.status` remains `pending`.
 
 ---
 
 ## Phase 3 — Notifications
 
-**Wizard:** Notification wizard
+**Status: Implemented ✓**
 
-Notifications are queued in the database by a trigger and dispatched asynchronously by Edge Functions. This keeps the booking flow fast — the API does not wait for email or SMS delivery.
+Notifications are queued in the database by a trigger and dispatched asynchronously.
 
-### Routes
+### Implemented routes
 
 | Method | Path | Controller | Description |
 |---|---|---|---|
 | `GET` | `/notifications` | `NotificationController.list` | List the current user's in-app notifications |
 | `PATCH` | `/notifications/:id/read` | `NotificationController.markRead` | Mark a notification as read |
-| `GET` | `/admin/notifications` | `AdminNotificationController.all` | All notification logs (admin) |
-
-### Dispatch flow
-
-```
-ticket.status → 'confirmed'
-  └─► queue_booking_notifications trigger
-        ├─► INSERT notifications (channel: 'email',   status: 'queued')
-        └─► INSERT notifications (channel: 'in_app',  status: 'queued')
-
-notification-worker Edge Function (scheduled / cron)
-  ├─► Fetches rows WHERE status = 'queued'
-  ├─► send-email Edge Function → SendGrid / Resend
-  └─► send-sms Edge Function  → Twilio / Africa's Talking
-      └─► Updates notifications.status = 'sent' or 'failed'
-```
-
-### Notification channels
-
-| Channel | Provider | Triggered by |
-|---|---|---|
-| `email` | SendGrid / Resend | Booking confirmation |
-| `sms` | Twilio / Africa's Talking | Booking confirmation |
-| `in_app` | `notifications` table via RLS | Booking confirmation |
-
-### Notes
-
-- In-app notifications are served directly from the `notifications` table — no additional delivery mechanism needed.
-- Failed dispatches record the error in `notifications.error` and can be retried by the worker.
-- Users can only read their own notifications (RLS: `user_id = auth.uid()`).
+| `GET` | `/admin/notifications` | `NotificationController.all` | All notification logs (admin only) |
 
 ---
 
 ## Phase 4 — Admin
 
-Two wizards covering the management dashboard and the audit trail.
+**Status: Implemented ✓**
+
+Two parts covering the management dashboard and the audit trail.
 
 ---
 
-### Wizard 4a — Admin dashboard
+### Part 4a — Admin dashboard
 
-Provides admin users with full visibility of bookings, users, and ticket status management. All routes require the `requireAdmin` middleware, which validates `is_admin()` against the JWT.
+Provides admin users with full visibility of bookings, users, and ticket status management.
 
-#### Routes
+#### Implemented routes
 
 | Method | Path | Controller | Description |
 |---|---|---|---|
-| `GET` | `/admin/bookings` | `AdminBookingController.list` | All bookings via `admin_booking_view` |
+| `GET` | `/admin/bookings` | `AdminBookingController.list` | All bookings |
 | `GET` | `/admin/users` | `AdminUserController.list` | All users with profile information |
 | `GET` | `/admin/users/:id` | `AdminUserController.get` | Single user with all their tickets |
 | `PATCH` | `/admin/tickets/:id/status` | `AdminTicketController.setStatus` | Override ticket status |
 
-#### `admin_booking_view` fields
-
-Each row in the view joins tickets, profiles, plans, and the latest transaction:
-
-```
-ticket_uuid, unique_code, ticket_status, booked_at, confirmed_at,
-email, first_name, last_name, contact_number,
-plan_name, price, currency,
-gateway, gateway_reference, paid_amount, payment_status, payment_completed_at
-```
-
-#### Notes
-
-- All list endpoints support `?page=&limit=` pagination.
-- Status overrides by an admin are captured automatically by `audit_trigger_fn`.
-- Use `service_role` key server-side for admin operations to bypass RLS where needed.
-
 ---
 
-### Wizard 4b — Audit log
+### Part 4b — Audit log
 
-Read-only access to the append-only audit trail. No write endpoints exist at the API layer — the guarantee is enforced at the database level.
+Read-only access to the append-only audit trail.
 
-#### Routes
+#### Implemented routes
 
 | Method | Path | Controller | Description |
 |---|---|---|---|
 | `GET` | `/admin/audit` | `AuditController.list` | Paginated audit log |
 | `GET` | `/admin/audit/:table` | `AuditController.byTable` | Filter log by table name |
 | `GET` | `/admin/audit/user/:userId` | `AuditController.byUser` | All changes made by a specific user |
-
-#### Notes
-
-- `audit_logs` has no UPDATE or DELETE RLS policies — rows are immutable by design.
-- `old_data` and `new_data` are JSONB columns — diff them in the dashboard to show what changed.
-- Table is indexed on `(table_name, record_id)` and `changed_at DESC` for fast filtering and time-range queries.
-- Tables audited: `profiles`, `tickets`, `transactions`, `ticket_plans`.
 
 ---
 
@@ -357,121 +255,82 @@ Read-only access to the append-only audit trail. No write endpoints exist at the
 | `notifications` | Own notifications — read only | Full access |
 | `audit_logs` | No access | Read only |
 
-Admin status is determined by `user_metadata.role = 'admin'` in the Supabase JWT, evaluated by the `is_admin()` SQL function.
-
----
-
-## Edge functions
-
-| Function | Trigger | Description |
-|---|---|---|
-| `send-email` | Called by `notification-worker` | Dispatches booking confirmation email via SendGrid / Resend |
-| `send-sms` | Called by `notification-worker` | Dispatches booking confirmation SMS via Twilio / Africa's Talking |
-| `process-payment` | Called by payment webhook | Handles async payment confirmation and ticket status update |
-| `notification-worker` | Cron / scheduled | Polls `notifications WHERE status = 'queued'` and dispatches |
-
-Deploy with:
-
-```bash
-supabase functions deploy send-email
-supabase functions deploy send-sms
-supabase functions deploy process-payment
-supabase functions deploy notification-worker
-```
-
 ---
 
 ## Environment variables
 
+Create a `.env` file in the `server/` directory (use `.env.example` as a template):
+
 ```env
 # Supabase
 SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+SUPABASE_PUBLISHABLE_KEY=your-publishable-key
+SUPABASE_SECRET_KEY=your-secret-key
 
-# Payment gateway
-PAYMENT_GATEWAY=payfast
-PAYFAST_MERCHANT_ID=your-merchant-id
-PAYFAST_MERCHANT_KEY=your-merchant-key
-PAYFAST_PASSPHRASE=your-passphrase
-PAYMENT_WEBHOOK_SECRET=your-webhook-secret
+# Server
+PORT=3000
 
-# Email
-EMAIL_PROVIDER=sendgrid
-SENDGRID_API_KEY=your-sendgrid-key
-EMAIL_FROM=bookings@yourapp.co.za
+# EmailJS (for ticket confirmations)
+EMAILJS_PUBLIC_KEY=
+EMAILJS_PRIVATE_KEY=
+EMAILJS_SERVICE_ID=
+EMAILJS_TEMPLATE_ID=
 
-# SMS
-SMS_PROVIDER=africas_talking
-AT_API_KEY=your-at-key
-AT_USERNAME=your-at-username
-SMS_FROM=BookingApp
+# (Future) Payment gateway
+PAYMENT_GATEWAY=
+PAYFAST_MERCHANT_ID=
+PAYFAST_MERCHANT_KEY=
+PAYFAST_PASSPHRASE=
+PAYMENT_WEBHOOK_SECRET=
+
+# (Future) SMS
+SMS_PROVIDER=
+AT_API_KEY=
+AT_USERNAME=
+SMS_FROM=
 ```
+
+### Setting up EmailJS
+
+1. Go to [https://www.emailjs.com](https://www.emailjs.com) and create an account
+2. Add an email service (e.g., Gmail, Outlook) and get your `SERVICE_ID`
+3. Create an email template and get your `TEMPLATE_ID`
+4. Get your `PUBLIC_KEY` and `PRIVATE_KEY` from your account settings
+5. Add all these to your `.env` file
 
 ---
 
 ## Getting started
 
-### 1. Clone and install
+### 1. Install dependencies
 
 ```bash
-git clone https://github.com/your-org/booking-website.git
-cd booking-website
+cd server
 npm install
 ```
 
-### 2. Set up Supabase
+### 2. Set up environment variables
 
-```bash
-npx supabase login
-npx supabase init
-npx supabase link --project-ref your-project-ref
-```
+Copy `.env.example` to `.env` and fill in your Supabase credentials.
 
-### 3. Run the migration
+### 3. Set up an admin user
 
-```bash
-npx supabase db push
-# or apply the migration file directly:
-psql $DATABASE_URL -f supabase/migrations/001_booking_schema.sql
-```
+Admin users can manage ticket plans and access admin-only endpoints.
 
-### 4. Set environment variables
+#### Option 1: Set admin via Supabase SQL Editor (recommended)
+1. Go to your Supabase project dashboard
+2. Navigate to "SQL Editor"
+3. Open `server/src/docs/set-admin.sql`
+4. Replace `'admin@example.com'` with the email of the user you want to make admin
+5. Run the SQL script
 
-Copy `.env.example` to `.env` and fill in your values.
+#### Option 2: Set admin during sign-up
+When signing up a user, include `"role": "admin"` in the `data` or `user_metadata` field (note: this is only possible server-side or via Supabase Admin API).
 
-### 5. Deploy Edge Functions
-
-```bash
-npx supabase functions deploy --all
-```
-
-### 6. Set admin role on a user
-
-```sql
-UPDATE auth.users
-SET raw_user_meta_data = raw_user_meta_data || '{"role": "admin"}'
-WHERE email = 'admin@yourapp.co.za';
-```
-
-### 7. Start the development server
+### 4. Start the development server
 
 ```bash
 npm run dev
 ```
 
----
-
-## Wizard summary
-
-| # | Wizard | Phase | Routes | Controllers |
-|---|---|---|---|---|
-| 1 | Auth wizard | Auth | 5 | AuthController, ProfileController |
-| 2 | Ticket plans wizard | Booking | 4 | PlanController, AdminPlanController |
-| 3 | Ticket booking wizard | Booking | 4 | TicketController |
-| 4 | Payment wizard | Booking | 3 | PaymentController |
-| 5 | Notification wizard | Notifications | 3 | NotificationController, AdminNotificationController |
-| 6 | Admin dashboard wizard | Admin | 4 | AdminBookingController, AdminUserController, AdminTicketController |
-| 7 | Audit log wizard | Admin | 3 | AuditController |
-
-**Total: 26 routes across 7 wizards.**
+The API server will start at `http://localhost:3000` and API docs are available at `http://localhost:3000/api-docs`.
