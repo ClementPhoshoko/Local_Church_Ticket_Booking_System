@@ -1,6 +1,9 @@
 # Local Church Ticket Booking System
 
-A full-stack ticket booking platform for local churches, built with **Express.js** (backend) and **React** (frontend, coming soon), with **Supabase** (PostgreSQL + Auth) as the backend service.
+A full-stack ticket booking platform for local churches, built with:
+- **Backend**: Express.js + Supabase
+- **Frontend**: React (coming soon)
+- **Database/Authentication**: Supabase (PostgreSQL + Auth)
 
 ---
 
@@ -9,13 +12,14 @@ A full-stack ticket booking platform for local churches, built with **Express.js
 1. [Tech stack](#tech-stack)
 2. [Database schema overview](#database-schema-overview)
 3. [Project structure](#project-structure)
-4. [Phase 1 — Authentication](#phase-1--authentication)
-5. [Phase 2 — Booking](#phase-2--booking)
-6. [Phase 3 — Notifications](#phase-3--notifications)
-7. [Phase 4 — Admin](#phase-4--admin)
-8. [Row level security summary](#row-level-security-summary)
-9. [Environment variables](#environment-variables)
-10. [Getting started](#getting-started)
+4. [Phase 1 — Authentication (Backend)](#phase-1--authentication-backend)
+5. [Phase 2 — Booking (Backend)](#phase-2--booking-backend)
+6. [Phase 3 — Notifications (Backend)](#phase-3--notifications-backend)
+7. [Phase 4 — Admin (Backend)](#phase-4--admin-backend)
+8. [Frontend Plan - React](#frontend-plan---react)
+9. [Row level security summary](#row-level-security-summary)
+10. [Environment variables](#environment-variables)
+11. [Getting started](#getting-started)
 
 ---
 
@@ -81,29 +85,30 @@ Example: `100042 21062025` → `10004221062025`
 │   │   │   ├── supabase.js       # Supabase client configuration
 │   │   │   └── swagger.js        # Swagger documentation setup
 │   │   ├── controllers/
-│   │   ├── AuthController.js # Authentication endpoints
-│   │   ├── ProfileController.js # Profile management endpoints
-│   │   ├── PlanController.js # Ticket plan endpoints
-│   │   ├── TicketController.js # Ticket booking endpoints
-│   │   ├── PaymentController.js # Payment endpoints
-│   │   ├── NotificationController.js # Notification endpoints
-│   │   ├── AdminBookingController.js # Admin booking endpoints
-│   │   ├── AdminUserController.js # Admin user endpoints
-│   │   ├── AdminTicketController.js # Admin ticket endpoints
-│   │   └── AuditController.js # Audit log endpoints
+│   │   │   ├── AuthController.js # Authentication endpoints
+│   │   │   ├── ProfileController.js # Profile management endpoints
+│   │   │   ├── PlanController.js # Ticket plan endpoints
+│   │   │   ├── TicketController.js # Ticket booking endpoints
+│   │   │   ├── PaymentController.js # Payment endpoints
+│   │   │   ├── NotificationController.js # Notification endpoints
+│   │   │   ├── AdminBookingController.js # Admin booking endpoints
+│   │   │   ├── AdminUserController.js # Admin user endpoints
+│   │   │   ├── AdminTicketController.js # Admin ticket endpoints
+│   │   │   └── AuditController.js # Audit log endpoints
 │   │   ├── docs/
-│   │   │   └── full_schema.sql   # Database schema SQL
+│   │   │   ├── full_schema.sql   # Database schema SQL
+│   │   │   └── set-admin.sql     # Set admin user SQL
 │   │   ├── middleware/
 │   │   │   ├── auth.js           # JWT authentication middleware
 │   │   │   └── requireAdmin.js   # Admin check middleware
 │   │   ├── models/               # (Future: Data models)
 │   │   ├── routes/
-│   │   ├── auth.routes.js    # Auth API routes
-│   │   ├── plans.routes.js   # Ticket plan routes
-│   │   ├── tickets.routes.js # Ticket routes
-│   │   ├── payments.routes.js # Payment routes
-│   │   ├── notifications.routes.js # Notification routes
-│   │   └── admin.routes.js   # Admin API routes
+│   │   │   ├── auth.routes.js    # Auth API routes
+│   │   │   ├── plans.routes.js   # Ticket plan routes
+│   │   │   ├── tickets.routes.js # Ticket routes
+│   │   │   ├── payments.routes.js # Payment routes
+│   │   │   ├── notifications.routes.js # Notification routes
+│   │   │   └── admin.routes.js   # Admin API routes
 │   │   ├── services/
 │   │   │   └── emailjs.js        # EmailJS service for confirmations
 │   │   └── index.js              # Express app entry point
@@ -111,13 +116,28 @@ Example: `100042 21062025` → `10004221062025`
 │   ├── .env.example              # Example environment variables
 │   ├── package.json
 │   └── package-lock.json
+├── client/                      # React frontend
+│   ├── src/
+│   │   ├── components/          # Reusable components
+│   │   ├── pages/               # Page components
+│   │   ├── context/             # React Context (Auth, etc.)
+│   │   ├── hooks/               # Custom hooks
+│   │   ├── services/            # API service calls
+│   │   ├── types/               # TypeScript types (optional, recommended)
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── index.html
+│   ├── .env
+│   ├── package.json
+│   ├── tailwind.config.js
+│   └── vite.config.js
 ├── .gitignore
 └── README.md
 ```
 
 ---
 
-## Phase 1 — Authentication
+## Phase 1 — Authentication (Backend)
 
 **Status: Implemented ✓**
 
@@ -139,7 +159,7 @@ Visit `http://localhost:3000/api-docs` for complete Swagger API documentation!
 
 ---
 
-## Phase 2 — Booking
+## Phase 2 — Booking (Backend)
 
 **Status: Implemented ✓**
 
@@ -191,7 +211,7 @@ Handles gateway integration and webhook processing. Currently uses a mock gatewa
 
 ---
 
-## Phase 3 — Notifications
+## Phase 3 — Notifications (Backend)
 
 **Status: Implemented ✓**
 
@@ -207,7 +227,7 @@ Notifications are queued in the database by a trigger and dispatched asynchronou
 
 ---
 
-## Phase 4 — Admin
+## Phase 4 — Admin (Backend)
 
 **Status: Implemented ✓**
 
@@ -241,6 +261,129 @@ Read-only access to the append-only audit trail.
 | `GET` | `/admin/audit` | `AuditController.list` | Paginated audit log |
 | `GET` | `/admin/audit/:table` | `AuditController.byTable` | Filter log by table name |
 | `GET` | `/admin/audit/user/:userId` | `AuditController.byUser` | All changes made by a specific user |
+
+---
+
+## Frontend Plan - React
+
+**Status: To implement**
+
+Modern React-based frontend using **Vite**, **React Router**, **TanStack Query**, and **Tailwind CSS**!
+
+---
+
+### Frontend Tech Stack
+| Layer | Technology |
+|---|---|
+| Build Tool | Vite |
+| UI Library | React 18 |
+| Routing | React Router 6 |
+| State/Data Fetching | TanStack Query (React Query) |
+| Styling | Tailwind CSS |
+| Forms | React Hook Form |
+| Authentication Context | React Context API |
+| Notifications (UI) | React Hot Toast |
+
+---
+
+### Frontend Project Structure
+```
+/
+├── server/              # (Existing backend)
+└── client/              # React frontend
+    ├── src/
+    │   ├── components/  # Reusable components
+    │   ├── pages/       # Page components
+    │   ├── context/     # React Context (Auth, etc.)
+    │   ├── hooks/       # Custom hooks
+    │   ├── services/    # API service calls
+    │   ├── types/       # TypeScript types (optional, recommended)
+    │   ├── App.jsx
+    │   └── main.jsx
+    ├── index.html
+    ├── package.json
+    ├── tailwind.config.js
+    └── vite.config.js
+```
+
+---
+
+### Frontend Phases (Wizards)
+
+---
+
+#### Wizard 1: Authentication & Onboarding
+| Task | Description |
+|---|---|
+| 1 | Create React + Vite project |
+| 2 | Install dependencies (Tailwind CSS, React Router, etc.) |
+| 3 | Create AuthContext (user state, login/logout/signup) |
+| 4 | Build Login page with React Hook Form |
+| 5 | Build Signup page with React Hook Form |
+| 6 | Build Profile page (view and edit user info) |
+| 7 | Add protected routes (only authenticated users) |
+| 8 | Add navigation bar with user dropdown |
+
+**Pages to create:**
+- `/login` → LoginPage
+- `/signup` → SignupPage
+- `/profile` → ProfilePage
+- `/` → HomePage (landing page)
+
+---
+
+#### Wizard 2: Ticket Plans & Booking
+| Task | Description |
+|---|---|
+| 1 | Build Plans page (list active ticket plans) |
+| 2 | Create TicketPlanCard component |
+| 3 | Build Ticket creation flow (select plan, confirm) |
+| 4 | Create MockPayment component (to trigger payment confirmation) |
+| 5 | Build My Tickets page (list user's tickets, with ticket details) |
+| 6 | Build Ticket Detail page (show unique code, plan info, status) |
+| 7 | Add Cancel Ticket button on Ticket Detail page |
+| 8 | Show success message on successful ticket confirmation |
+
+**Pages to create:**
+- `/plans` → PlansListPage
+- `/tickets` → MyTicketsPage
+- `/tickets/:id` → TicketDetailPage
+
+---
+
+#### Wizard 3: Notifications
+| Task | Description |
+|---|---|
+| 1 | Build Notifications page (list user's in-app notifications) |
+| 2 | Create NotificationItem component |
+| 3 | Add "Mark as read" functionality |
+| 4 | Show unread count in navigation badge |
+
+**Pages to create:**
+- `/notifications` → NotificationsListPage
+
+---
+
+#### Wizard 4: Admin Dashboard
+| Task | Description |
+|---|---|
+| 1 | Add admin route guard (only show admin links to admins) |
+| 2 | Build Admin Layout (sidebar navigation) |
+| 3 | Build Admin Bookings page (list all bookings) |
+| 4 | Build Admin Users page (list all users) |
+| 5 | Build Admin User Detail page (show user + their tickets) |
+| 6 | Build Admin Ticket Status Update component |
+| 7 | Build Admin Audit Log page (list audit logs) |
+| 8 | Add table filters/search (optional, nice to have) |
+
+**Admin pages to create:**
+- `/admin` → AdminDashboardPage (redirects to bookings)
+- `/admin/bookings` → AdminBookingsPage
+- `/admin/users` → AdminUsersPage
+- `/admin/users/:id` → AdminUserDetailPage
+- `/admin/audit` → AdminAuditPage
+
+---
 
 ---
 
@@ -302,6 +445,10 @@ SMS_FROM=
 
 ## Getting started
 
+---
+
+### Backend Setup
+
 ### 1. Install dependencies
 
 ```bash
@@ -324,8 +471,8 @@ Admin users can manage ticket plans and access admin-only endpoints.
 4. Replace `'admin@example.com'` with the email of the user you want to make admin
 5. Run the SQL script
 
-#### Option 2: Set admin during sign-up
-When signing up a user, include `"role": "admin"` in the `data` or `user_metadata` field (note: this is only possible server-side or via Supabase Admin API).
+#### Option 2: Set admin via .env (development only)
+Add your email to `ADMIN_EMAIL` in `server/.env`.
 
 ### 4. Start the development server
 
@@ -334,3 +481,48 @@ npm run dev
 ```
 
 The API server will start at `http://localhost:3000` and API docs are available at `http://localhost:3000/api-docs`.
+
+---
+
+### Frontend Setup (React)
+
+### 1. Create React Vite project
+
+```bash
+# From project root
+npm create vite@latest client -- --template react
+cd client
+```
+
+### 2. Install dependencies
+
+```bash
+# From client directory
+npm install
+# Install additional dependencies
+npm install react-router-dom @tanstack/react-query @tanstack/react-query-devtools react-hook-form react-hot-toast
+# Install Tailwind CSS
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+### 3. Configure Tailwind CSS
+
+Follow the [official Tailwind CSS with Vite guide](https://tailwindcss.com/docs/guides/vite).
+
+### 4. Set up environment variables
+
+Create a `.env` file in the `client/` directory:
+
+```env
+VITE_API_BASE_URL=http://localhost:3000
+```
+
+### 5. Start the frontend dev server
+
+```bash
+npm run dev
+```
+
+The frontend server will start at `http://localhost:5173`!
+
