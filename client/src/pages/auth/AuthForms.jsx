@@ -1,9 +1,13 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './AuthForms.css'
 import { supabase } from '../../services/supabase'
 import Loading from '../../components/loading/Loading'
+import { useAuth } from '../../context/AuthContext'
 
 function AuthForms() {
+  const navigate = useNavigate()
+  const { role } = useAuth()
   const [isLogin, setIsLogin] = useState(true)
   const [loginForm, setLoginForm] = useState({ email: '', password: '' })
   const [signupForm, setSignupForm] = useState({
@@ -24,7 +28,7 @@ function AuthForms() {
     setMessageType(null)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: loginForm.email,
         password: loginForm.password
       })
@@ -33,8 +37,9 @@ function AuthForms() {
         setMessage(error.message)
         setMessageType('error')
       } else {
-        setMessage('Login successful!')
-        setMessageType('success')
+        // Redirect based on role
+        const userRole = data.user?.user_metadata?.role ?? 'user'
+        navigate(userRole === 'admin' ? '/admin' : '/landing')
       }
     } catch (err) {
       setMessage('An unexpected error occurred')
