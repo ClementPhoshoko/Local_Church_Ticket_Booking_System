@@ -1,0 +1,150 @@
+.admin-container {
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--color-bg-alt);
+  font-family: var(--font-family-sans);
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+  color: var(--color-navy);
+  font-family: var(--font-family-serif);
+  margin: 0;
+}
+
+.sign-out-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-navy);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: background-color var(--transition-base);
+}
+
+.sign-out-btn:hover {
+  background-color: var(--color-navy-dark);
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--color-border-light);
+}
+
+.admin-tab {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all var(--transition-base);
+}
+
+.admin-tab:hover {
+  color: var(--color-navy);
+}
+
+.admin-tab.active {
+  color: var(--color-gold);
+  border-bottom-color: var(--color-gold);
+}
+
+.admin-content {
+  background-color: var(--color-bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+}
+
+.admin-content h2 {
+  color: var(--color-navy);
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.error-message {
+  color: var(--color-error);
+  padding: 1rem;
+  background-color: rgba(229, 62, 62, 0.1);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-error);
+}
+
+.bookings-table,
+.users-table {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: var(--color-navy);
+  color: white;
+}
+
+th,
+td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+th {
+  font-weight: var(--font-weight-semibold);
+}
+
+tbody tr:hover {
+  background-color: var(--color-bg-alt);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.status-pending {
+  background-color: rgba(221, 107, 32, 0.1);
+  color: var(--color-warning);
+}
+
+.status-confirmed {
+  background-color: rgba(56, 161, 105, 0.1);
+  color: var(--color-success);
+}
+
+.status-cancelled {
+  background-color: rgba(229, 62, 62, 0.1);
+  color: var(--color-error);
+}
+
+.status-refunded {
+  background-color: rgba(49, 130, 206, 0.1);
+  color: var(--color-info);
+}
+
+select {
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: white;
+  cursor: pointer;
+}
