@@ -8,6 +8,7 @@ const plansRoutes = require('./routes/plans.routes');
 const ticketsRoutes = require('./routes/tickets.routes');
 const paymentsRoutes = require('./routes/payments.routes');
 const notificationsRoutes = require('./routes/notifications.routes');
+const profileRoutes = require('./routes/profile.routes');
 const adminRoutes = require('./routes/admin.routes');
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +22,7 @@ app.use('/plans', plansRoutes);
 app.use('/tickets', ticketsRoutes);
 app.use('/payments', paymentsRoutes);
 app.use('/notifications', notificationsRoutes);
+app.use('/profile', profileRoutes);
 app.use('/admin', adminRoutes);
 
 app.get('/', (req, res) => {

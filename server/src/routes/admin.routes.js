@@ -4,6 +4,7 @@ const AdminBookingController = require('../controllers/AdminBookingController');
 const AdminUserController = require('../controllers/AdminUserController');
 const AdminTicketController = require('../controllers/AdminTicketController');
 const AuditController = require('../controllers/AuditController');
+const PlanController = require('../controllers/PlanController');
 const authMiddleware = require('../middleware/auth');
 const requireAdmin = require('../middleware/requireAdmin');
 
@@ -131,7 +132,7 @@ router.patch('/tickets/:id/status', authMiddleware, requireAdmin, AdminTicketCon
 
 /**
  * @swagger
- * /admin/audit:
+ * /admin/audit-logs:
  *   get:
  *     summary: List all audit logs (admin only)
  *     tags: [Admin]
@@ -156,11 +157,11 @@ router.patch('/tickets/:id/status', authMiddleware, requireAdmin, AdminTicketCon
  *       403:
  *         description: Admin access required
  */
-router.get('/audit', authMiddleware, requireAdmin, AuditController.list);
+router.get('/audit-logs', authMiddleware, requireAdmin, AuditController.list);
 
 /**
  * @swagger
- * /admin/audit/{table}:
+ * /admin/audit-logs/table/{table}:
  *   get:
  *     summary: Filter audit logs by table (admin only)
  *     tags: [Admin]
@@ -190,11 +191,11 @@ router.get('/audit', authMiddleware, requireAdmin, AuditController.list);
  *       403:
  *         description: Admin access required
  */
-router.get('/audit/:table', authMiddleware, requireAdmin, AuditController.byTable);
+router.get('/audit-logs/table/:table', authMiddleware, requireAdmin, AuditController.byTable);
 
 /**
  * @swagger
- * /admin/audit/user/{userId}:
+ * /admin/audit-logs/user/{userId}:
  *   get:
  *     summary: Filter audit logs by user (admin only)
  *     tags: [Admin]
@@ -224,6 +225,24 @@ router.get('/audit/:table', authMiddleware, requireAdmin, AuditController.byTabl
  *       403:
  *         description: Admin access required
  */
-router.get('/audit/user/:userId', authMiddleware, requireAdmin, AuditController.byUser);
+router.get('/audit-logs/user/:userId', authMiddleware, requireAdmin, AuditController.byUser);
+
+/**
+ * @swagger
+ * /admin/plans:
+ *   get:
+ *     summary: List all ticket plans (admin only, including inactive)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all plans
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Admin required
+ */
+router.get('/plans', authMiddleware, requireAdmin, PlanController.listAll);
 
 module.exports = router;

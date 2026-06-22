@@ -1,5 +1,20 @@
 const { supabase, supabaseAdmin } = require('../config/supabase');
 
+function getUserFriendlyError(error) {
+  if (error && error.message) {
+    if (error.message.toLowerCase().includes('invalid api key') || 
+        error.message.toLowerCase().includes('api key') ||
+        error.code === 'invalid_grant' ||
+        error.code === 'PGRST301') {
+      return 'Server configuration error. Please check with your administrator.';
+    }
+    if (error.message.toLowerCase().includes('not found') || error.code === 'PGRST116') {
+      return 'Requested resource not found.';
+    }
+  }
+  return error ? error.message : 'Something went wrong';
+}
+
 const TicketController = {
   // Create ticket (and initiate payment flow)
   create: async (req, res) => {
@@ -60,7 +75,8 @@ const TicketController = {
         .order('created_at', { ascending: false });
 
       if (error) {
-        return res.status(400).json({ error: error.message });
+        console.error('TicketController.list error:', error);
+        return res.status(400).json({ error: getUserFriendlyError(error) });
       }
 
       res.status(200).json({ tickets });
@@ -129,7 +145,8 @@ const TicketController = {
         .single();
 
       if (updateError) {
-        return res.status(400).json({ error: updateError.message });
+        console.error('TicketController.cancel error:', updateError);
+        return res.status(400).json({ error: getUserFriendlyError(updateError) });
       }
 
       res.status(200).json({

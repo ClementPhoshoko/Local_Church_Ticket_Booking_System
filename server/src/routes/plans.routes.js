@@ -125,4 +125,30 @@ router.post('/', authMiddleware, requireAdmin, PlanController.create);
  */
 router.patch('/:id', authMiddleware, requireAdmin, PlanController.update);
 
+/**
+ * @swagger
+ * /plans/{id}:
+ *   delete:
+ *     summary: Deactivate a ticket plan (admin only)
+ *     tags: [Ticket Plans]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Plan deactivated
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Admin required
+ *       404:
+ *         description: Plan not found
+ */
+router.delete('/:id', authMiddleware, requireAdmin, PlanController.delete);
+
 module.exports = router;

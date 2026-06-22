@@ -1,5 +1,20 @@
 const { supabaseAdmin } = require('../config/supabase');
 
+function getUserFriendlyError(error) {
+  if (error && error.message) {
+    if (error.message.toLowerCase().includes('invalid api key') || 
+        error.message.toLowerCase().includes('api key') ||
+        error.code === 'invalid_grant' ||
+        error.code === 'PGRST301') {
+      return 'Server configuration error. Please check with your administrator.';
+    }
+    if (error.message.toLowerCase().includes('not found') || error.code === 'PGRST116') {
+      return 'Requested resource not found.';
+    }
+  }
+  return error ? error.message : 'Something went wrong';
+}
+
 const AuditController = {
   // List all audit logs with pagination
   list: async (req, res) => {
@@ -14,11 +29,12 @@ const AuditController = {
         .range(offset, offset + limit - 1);
 
       if (error) {
-        return res.status(400).json({ error: error.message });
+        console.error('AuditController.list error:', error);
+        return res.status(400).json({ error: getUserFriendlyError(error) });
       }
 
       res.status(200).json({
-        logs,
+        logs: logs || [],
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
@@ -26,7 +42,7 @@ const AuditController = {
         }
       });
     } catch (err) {
-      console.error(err);
+      console.error('AuditController.list unexpected error:', err);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -46,11 +62,12 @@ const AuditController = {
         .range(offset, offset + limit - 1);
 
       if (error) {
-        return res.status(400).json({ error: error.message });
+        console.error('AuditController.byTable error:', error);
+        return res.status(400).json({ error: getUserFriendlyError(error) });
       }
 
       res.status(200).json({
-        logs,
+        logs: logs || [],
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
@@ -58,7 +75,7 @@ const AuditController = {
         }
       });
     } catch (err) {
-      console.error(err);
+      console.error('AuditController.byTable unexpected error:', err);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -78,11 +95,12 @@ const AuditController = {
         .range(offset, offset + limit - 1);
 
       if (error) {
-        return res.status(400).json({ error: error.message });
+        console.error('AuditController.byUser error:', error);
+        return res.status(400).json({ error: getUserFriendlyError(error) });
       }
 
       res.status(200).json({
-        logs,
+        logs: logs || [],
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
@@ -90,7 +108,7 @@ const AuditController = {
         }
       });
     } catch (err) {
-      console.error(err);
+      console.error('AuditController.byUser unexpected error:', err);
       res.status(500).json({ error: 'Internal server error' });
     }
   }

@@ -1,5 +1,20 @@
 const { supabaseAdmin } = require('../config/supabase');
 
+function getUserFriendlyError(error) {
+  if (error && error.message) {
+    if (error.message.toLowerCase().includes('invalid api key') || 
+        error.message.toLowerCase().includes('api key') ||
+        error.code === 'invalid_grant' ||
+        error.code === 'PGRST301') {
+      return 'Server configuration error. Please check with your administrator.';
+    }
+    if (error.message.toLowerCase().includes('not found') || error.code === 'PGRST116') {
+      return 'Requested resource not found.';
+    }
+  }
+  return error ? error.message : 'Something went wrong';
+}
+
 const AdminTicketController = {
   // Set a ticket's status
   setStatus: async (req, res) => {
@@ -37,7 +52,8 @@ const AdminTicketController = {
         .single();
 
       if (updateError) {
-        return res.status(400).json({ error: updateError.message });
+        console.error('AdminTicketController.setStatus update error:', updateError);
+        return res.status(400).json({ error: getUserFriendlyError(updateError) });
       }
 
       res.status(200).json({
@@ -45,7 +61,7 @@ const AdminTicketController = {
         ticket
       });
     } catch (err) {
-      console.error(err);
+      console.error('AdminTicketController.setStatus unexpected error:', err);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
