@@ -7,23 +7,23 @@ export function useAdminUsers(page = 1, limit = 20) {
   const [error, setError] = useState(null)
   const [pagination, setPagination] = useState({ page: 1, limit: 20 })
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true)
-        const data = await adminApi.getUsers(page, limit)
-        setUsers(data.users || [])
-        setPagination(data.pagination || { page, limit })
-        setError(null)
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
+  const fetchUsers = async () => {
+    try {
+      setLoading(true)
+      const data = await adminApi.getUsers(page, limit)
+      setUsers(data.users || [])
+      setPagination(data.pagination || { page, limit })
+      setError(null)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchUsers()
   }, [page, limit])
 
-  return { users, loading, error, pagination }
+  return { users, loading, error, pagination, refetch: fetchUsers }
 }

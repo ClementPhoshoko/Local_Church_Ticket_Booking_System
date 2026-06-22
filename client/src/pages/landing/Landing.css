@@ -1,0 +1,286 @@
+.landing-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-base);
+}
+
+.landing-hero {
+  background: linear-gradient(135deg, var(--color-navy-dark) 0%, var(--color-navy) 100%);
+  padding: var(--spacing-8) var(--spacing-6);
+}
+
+.landing-header {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.landing-header h1 {
+  color: var(--color-white);
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-3xl);
+  margin: 0;
+}
+
+.landing-header p {
+  color: var(--color-white-soft);
+  margin: var(--spacing-2) 0 0 0;
+}
+
+.sign-out-btn {
+  padding: var(--spacing-3) var(--spacing-5);
+  border: 1px solid var(--color-white-soft);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-white);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.sign-out-btn:hover {
+  background: var(--color-glass-bg-light);
+  border-color: var(--color-white);
+}
+
+.landing-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-8) var(--spacing-6);
+  flex: 1;
+}
+
+.notification {
+  padding: var(--spacing-4);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-6);
+  font-size: var(--font-size-sm);
+}
+
+.notification.loading {
+  background: var(--color-glass-bg-light);
+  color: var(--color-navy);
+}
+
+.notification.success {
+  background: rgba(56, 161, 105, 0.1);
+  color: var(--color-success);
+  border: 1px solid var(--color-success);
+}
+
+.notification.error {
+  background: rgba(229, 62, 62, 0.1);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+}
+
+.tabs-container {
+  display: flex;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-8);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--spacing-2);
+}
+
+.tab {
+  padding: var(--spacing-3) var(--spacing-5);
+  border: none;
+  background: transparent;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.tab:hover {
+  color: var(--color-navy);
+}
+
+.tab.active {
+  color: var(--color-gold);
+  border-bottom-color: var(--color-gold);
+}
+
+.tab-content h2 {
+  color: var(--color-navy);
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-2xl);
+  margin: 0 0 var(--spacing-6) 0;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-6);
+}
+
+.plan-card {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+.plan-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.plan-card h3 {
+  color: var(--color-navy);
+  font-size: var(--font-size-xl);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.plan-card p {
+  color: var(--color-text-tertiary);
+  margin: 0 0 var(--spacing-4) 0;
+}
+
+.plan-price {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gold);
+  margin-bottom: var(--spacing-6);
+}
+
+.buy-btn {
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-5);
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-gold);
+  color: var(--color-white);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.buy-btn:hover {
+  background: var(--color-gold-dark);
+}
+
+.tickets-table {
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.tickets-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tickets-table thead {
+  background: var(--color-bg-alt);
+}
+
+.tickets-table th,
+.tickets-table td {
+  padding: var(--spacing-4) var(--spacing-5);
+  text-align: left;
+  font-size: var(--font-size-sm);
+}
+
+.tickets-table th {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tickets-table td {
+  color: var(--color-text-tertiary);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.tickets-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background: rgba(221, 107, 32, 0.1);
+  color: var(--color-warning);
+}
+
+.status-confirmed {
+  background: rgba(56, 161, 105, 0.1);
+  color: var(--color-success);
+}
+
+.status-cancelled {
+  background: rgba(229, 62, 62, 0.1);
+  color: var(--color-error);
+}
+
+.status-refunded {
+  background: rgba(107, 114, 128, 0.1);
+  color: var(--color-text-muted);
+}
+
+.cancel-btn {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-error);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.cancel-btn:hover {
+  background: rgba(229, 62, 62, 0.1);
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-12);
+  color: var(--color-text-muted);
+}
+
+.error-container {
+  padding: var(--spacing-6);
+  text-align: center;
+  background: rgba(229, 62, 62, 0.05);
+  border: 1px solid rgba(229, 62, 62, 0.2);
+  border-radius: var(--radius-md);
+}
+
+.error-message {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  margin: 0 0 var(--spacing-4) 0;
+}
+
+.retry-btn {
+  padding: var(--spacing-2) var(--spacing-4);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-navy);
+  color: var(--color-white);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.retry-btn:hover {
+  background: var(--color-navy-light);
+}

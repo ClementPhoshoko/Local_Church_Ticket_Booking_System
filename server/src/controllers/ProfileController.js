@@ -43,7 +43,8 @@ const ProfileController = {
         .single();
 
       if (error) {
-        return res.status(400).json({ error: error.message });
+        console.error('ProfileController.update error:', error);
+        return res.status(400).json({ error: getUserFriendlyError(error) });
       }
 
       res.status(200).json({
