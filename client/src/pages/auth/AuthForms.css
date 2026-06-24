@@ -161,3 +161,22 @@
   opacity: 0.7;
   cursor: not-allowed;
 }
+
+@media (max-width: 480px) {
+  .auth-forms__card {
+    padding: var(--spacing-4);
+  }
+
+  .auth-forms__title {
+    font-size: var(--font-size-xl);
+  }
+
+  .auth-forms__tabs {
+    padding: 3px;
+  }
+
+  .auth-forms__tab {
+    padding: var(--spacing-2);
+    font-size: var(--font-size-xs);
+  }
+}

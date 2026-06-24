@@ -122,3 +122,23 @@
 .unauthenticated-card__button:active {
   transform: translateY(1px);
 }
+
+@media (max-width: 768px) {
+  .unauthenticated-layout__verse {
+    display: none;
+  }
+
+  .unauthenticated-card {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .unauthenticated-card {
+    padding: var(--spacing-4);
+  }
+
+  .unauthenticated-card__title {
+    font-size: var(--font-size-xl);
+  }
+}

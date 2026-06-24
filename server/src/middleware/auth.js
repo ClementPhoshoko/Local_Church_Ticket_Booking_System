@@ -1,4 +1,4 @@
-const { supabase } = require('../config/supabase');
+const { supabase, hasRealSupabase, mockUsers } = require('../config/supabase');
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -10,9 +10,24 @@ const authMiddleware = async (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
 
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+    let user;
+    
+    if (!hasRealSupabase) {
+      // Mock mode: parse mock token
+      if (token.startsWith('mock-token-')) {
+        const userId = parseInt(token.split('mock-token-')[1]);
+        user = mockUsers.find(u => u.id === userId);
+      }
+    } else {
+      // Real Supabase: verify token
+      const { data: { user: realUser }, error } = await supabase.auth.getUser(token);
+      if (error || !realUser) {
+        return res.status(401).json({ error: 'Invalid token' });
+      }
+      user = realUser;
+    }
 
-    if (error || !user) {
+    if (!user) {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
