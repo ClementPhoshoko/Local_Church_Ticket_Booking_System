@@ -28,6 +28,10 @@
   overflow: hidden;
 }
 
+[data-theme="dark"] .landing-hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
 /* decorative circle accents in hero */
 .landing-hero::before,
 .landing-hero::after {
@@ -97,6 +101,33 @@
   margin: 0;
   font-size: 0.9rem;
   letter-spacing: 0.1px;
+}
+
+.landing-header-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.theme-toggle-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+  backdrop-filter: blur(4px);
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
 }
 
 .sign-out-btn {
