@@ -4,6 +4,9 @@ import { supabase } from '../../services/supabase'
 import { usePlans, useTickets, usePayments } from '../../hooks'
 import { useProfile } from '../../hooks/useProfile'
 import Loading from '../../components/loading/Loading'
+import AvailablePlans from './tabs/AvailablePlans'
+import Tickets from './tabs/Tickets'
+import Payment from '../../payment/Payment'
 import './Landing.css'
 
 function Landing() {
@@ -150,258 +153,61 @@ function Landing() {
           </div>
         )}
 
-        {/* Tab switcher */}
-        <div className="tabs-container">
-          <button
-            className={`tab ${activeTab === 'plans' ? 'active' : ''}`}
-            onClick={() => setActiveTab('plans')}
-          >
-            Available Plans
-          </button>
-          <button
-            className={`tab ${activeTab === 'tickets' ? 'active' : ''}`}
-            onClick={() => setActiveTab('tickets')}
-          >
-            My Tickets
-          </button>
+        {/* Tab switcher inside a box */}
+        <div className="tabs-box">
+          <div className="tabs-container">
+            <button
+              className={`tab ${activeTab === 'plans' ? 'active' : ''}`}
+              onClick={() => setActiveTab('plans')}
+            >
+              Available Plans
+            </button>
+            <button
+              className={`tab ${activeTab === 'tickets' ? 'active' : ''}`}
+              onClick={() => setActiveTab('tickets')}
+            >
+              My Tickets
+            </button>
+          </div>
         </div>
 
         {/* ── Plans tab ── */}
         {activeTab === 'plans' && (
-          <div className="tab-content">
-            <h2>Ticket Plans</h2>
-
-            {plansLoading && <Loading isVisible={true} message="Loading plans..." />}
-
-            {plansError && (
-              <div className="error-container">
-                <p className="error-message">{plansError}</p>
-                <button className="retry-btn" onClick={refetchPlans}>Try Again</button>
-              </div>
-            )}
-
-            {!plansLoading && !plansError && (
-              <div className="plans-grid">
-                {plans.length === 0 ? (
-                  <div className="empty-state">No plans available at the moment.</div>
-                ) : (
-                  plans.map(plan => (
-                    <div key={plan.id} className="plan-card">
-                      <h3>{plan.name}</h3>
-                      {plan.description && <p>{plan.description}</p>}
-                      <div className="plan-price">
-                        {plan.currency} {plan.price.toFixed(2)}
-                      </div>
-                      <button
-                        className="buy-btn"
-                        onClick={() => handleBuyTicket(plan.id)}
-                      >
-                        Buy Ticket
-                      </button>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-          </div>
+          <AvailablePlans
+            plans={plans}
+            plansLoading={plansLoading}
+            plansError={plansError}
+            refetchPlans={refetchPlans}
+            handleBuyTicket={handleBuyTicket}
+          />
         )}
 
         {/* ── Tickets tab ── */}
         {activeTab === 'tickets' && (
-          <div className="tab-content">
-            <h2>My Tickets</h2>
-
-            {ticketsLoading && <Loading isVisible={true} message="Loading tickets..." />}
-
-            {ticketsError && (
-              <div className="error-container">
-                <p className="error-message">{ticketsError}</p>
-                <button className="retry-btn" onClick={refetchTickets}>Try Again</button>
-              </div>
-            )}
-
-            {!ticketsLoading && !ticketsError && (
-              <div className="tickets-list">
-                {tickets.length === 0 ? (
-                  <div className="empty-state">
-                    You have no tickets yet. Browse the Available Plans to get started.
-                  </div>
-                ) : (
-                  <div className="tickets-table">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Code</th>
-                          <th>Plan</th>
-                          <th>Status</th>
-                          <th>Booked At</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {tickets.map(ticket => (
-                          <tr key={ticket.id}>
-                            <td>
-                              <button
-                                className="code-btn"
-                                onClick={() => handleViewTicketDetails(ticket)}
-                              >
-                                {ticket.unique_code}
-                              </button>
-                            </td>
-                            <td>{ticket.ticket_plans?.name}</td>
-                            <td>
-                              <span className={`status-badge status-${ticket.status}`}>
-                                {ticket.status}
-                              </span>
-                            </td>
-                            <td>{new Date(ticket.created_at).toLocaleString()}</td>
-                            <td>
-                              <div className="action-buttons">
-                                <button
-                                  className="view-btn"
-                                  onClick={() => handleViewTicketDetails(ticket)}
-                                >
-                                  View
-                                </button>
-                                {ticket.status === 'pending' && (
-                                  <button
-                                    className="pay-btn"
-                                    onClick={() => {
-                                      setSelectedTicket(ticket)
-                                      setShowTicketDetails(true)
-                                    }}
-                                  >
-                                    Pay
-                                  </button>
-                                )}
-                                {ticket.status === 'confirmed' && (
-                                  <button
-                                    className="cancel-btn"
-                                    onClick={() => handleCancelTicket(ticket.id)}
-                                    disabled={processingCancel === ticket.id}
-                                  >
-                                    {processingCancel === ticket.id ? 'Cancelling…' : 'Cancel'}
-                                  </button>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          <Tickets
+            tickets={tickets}
+            ticketsLoading={ticketsLoading}
+            ticketsError={ticketsError}
+            refetchTickets={refetchTickets}
+            handleViewTicketDetails={handleViewTicketDetails}
+            handleCancelTicket={handleCancelTicket}
+            processingCancel={processingCancel}
+          />
         )}
       </div>
 
       {/* ── Ticket detail modal ── */}
       {showTicketDetails && selectedTicket && (
-        <div className="modal-overlay" onClick={handleCloseDetails}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-
-            <div className="modal-header">
-              <h2>Ticket Details</h2>
-              <button className="close-btn" onClick={handleCloseDetails} aria-label="Close">×</button>
-            </div>
-
-            <div className="modal-body">
-
-              {/* Info rows */}
-              <div className="ticket-info">
-                <div className="info-row">
-                  <span className="label">Unique Code</span>
-                  <span className="value code-value">{selectedTicket.unique_code}</span>
-                </div>
-                <div className="info-row">
-                  <span className="label">Plan</span>
-                  <span className="value">{selectedTicket.ticket_plans?.name}</span>
-                </div>
-                <div className="info-row">
-                  <span className="label">Description</span>
-                  <span className="value">{selectedTicket.ticket_plans?.description || 'No description'}</span>
-                </div>
-                <div className="info-row">
-                  <span className="label">Price</span>
-                  <span className="value">
-                    {selectedTicket.ticket_plans?.currency} {selectedTicket.ticket_plans?.price.toFixed(2)}
-                  </span>
-                </div>
-                <div className="info-row">
-                  <span className="label">Status</span>
-                  <span className={`value status-badge status-${selectedTicket.status}`}>
-                    {selectedTicket.status}
-                  </span>
-                </div>
-                <div className="info-row">
-                  <span className="label">Booked At</span>
-                  <span className="value">{new Date(selectedTicket.created_at).toLocaleString()}</span>
-                </div>
-                {selectedTicket.confirmed_at && (
-                  <div className="info-row">
-                    <span className="label">Confirmed At</span>
-                    <span className="value">{new Date(selectedTicket.confirmed_at).toLocaleString()}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Payment section */}
-              {selectedTicket.status === 'pending' && (
-                <div className="payment-section">
-                  <h3>Complete Payment</h3>
-                  <p>Click below to complete your payment using our mock payment gateway.</p>
-                  <button
-                    className="pay-now-btn"
-                    onClick={handleInitiatePayment}
-                    disabled={processingPayment}
-                  >
-                    {processingPayment ? 'Processing…' : 'Pay Now'}
-                  </button>
-                </div>
-              )}
-
-              {/* Payment history */}
-              {transactions.length > 0 && (
-                <div className="transactions-section">
-                  <h3>Payment History</h3>
-                  <div className="transactions-list">
-                    {transactions.map(tx => (
-                      <div key={tx.id} className="transaction-item">
-                        <div className="tx-info">
-                          <span className="tx-gateway">{tx.gateway}</span>
-                          <span className={`tx-status status-badge status-${tx.status}`}>{tx.status}</span>
-                        </div>
-                        <div className="tx-amount">
-                          {tx.currency} {tx.amount.toFixed(2)}
-                        </div>
-                        <div className="tx-date">
-                          {new Date(tx.created_at).toLocaleString()}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="modal-footer">
-              {selectedTicket.status === 'confirmed' && (
-                <button
-                  className="cancel-ticket-btn"
-                  onClick={() => handleCancelTicket(selectedTicket.id)}
-                  disabled={processingCancel === selectedTicket.id}
-                >
-                  {processingCancel === selectedTicket.id ? 'Cancelling…' : 'Cancel Ticket'}
-                </button>
-              )}
-              <button className="close-modal-btn" onClick={handleCloseDetails}>Close</button>
-            </div>
-
-          </div>
-        </div>
+        <Payment
+          selectedTicket={selectedTicket}
+          transactions={transactions}
+          paymentsLoading={paymentsLoading}
+          processingPayment={processingPayment}
+          processingCancel={processingCancel}
+          handleCloseDetails={handleCloseDetails}
+          handleInitiatePayment={handleInitiatePayment}
+          handleCancelTicket={handleCancelTicket}
+        />
       )}
     </div>
   )

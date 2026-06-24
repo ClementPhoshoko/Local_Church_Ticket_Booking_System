@@ -1,4 +1,4 @@
-const { supabase, supabaseAdmin } = require('../config/supabase');
+const { supabase, supabaseAdmin, hasRealSupabase, mockTickets, mockTransactions, mockPlans } = require('../config/supabase');
 const emailjs = require('../services/emailjs');
 
 const PaymentController = {
@@ -12,6 +12,39 @@ const PaymentController = {
         return res.status(400).json({ error: 'Ticket ID is required' });
       }
 
+      if (!hasRealSupabase) {
+        // Mock mode: handle payment initiation
+        const ticket = mockTickets.find(t => t.id === ticket_id && t.user_id === userId);
+        if (!ticket) {
+          return res.status(404).json({ error: 'Ticket not found' });
+        }
+        if (ticket.status !== 'pending') {
+          return res.status(400).json({ error: 'Ticket is not in pending status' });
+        }
+        const plan = mockPlans.find(p => p.id === ticket.plan_id);
+        
+        const transaction = {
+          id: mockTransactions.length + 1,
+          ticket_id,
+          user_id: userId,
+          gateway,
+          amount: plan ? plan.price : 0,
+          currency: plan ? plan.currency : 'ZAR',
+          status: 'pending',
+          created_at: new Date().toISOString()
+        };
+        mockTransactions.push(transaction);
+        
+        const gatewayRedirectUrl = `${req.protocol}://${req.get('host')}/payments/webhook?txId=${transaction.id}&status=success`;
+        
+        return res.status(200).json({
+          message: 'Payment initiated successfully',
+          transaction,
+          gateway_redirect_url: gatewayRedirectUrl
+        });
+      }
+
+      // Real Supabase mode
       // Fetch ticket and plan details
       const { data: ticket, error: ticketError } = await supabaseAdmin
         .from('tickets')
@@ -69,6 +102,40 @@ const PaymentController = {
     try {
       const { txId, status } = req.query; // For mock, use query params. Real gateways use request body
       
+      if (!hasRealSupabase) {
+        // Mock mode: handle webhook
+        const transaction = mockTransactions.find(t => t.id === parseInt(txId));
+        if (!transaction) {
+          return res.status(404).json({ error: 'Transaction not found' });
+        }
+        if (transaction.status !== 'pending') {
+          return res.status(200).json({ message: 'Transaction already processed' });
+        }
+        
+        let updatedTicket = null;
+        
+        if (status === 'success') {
+          transaction.status = 'success';
+          transaction.completed_at = new Date().toISOString();
+          
+          const ticket = mockTickets.find(t => t.id === transaction.ticket_id);
+          if (ticket) {
+            ticket.status = 'confirmed';
+            ticket.confirmed_at = new Date().toISOString();
+            updatedTicket = ticket;
+          }
+        } else {
+          transaction.status = 'failed';
+        }
+        
+        return res.status(200).json({
+          message: 'Payment processed successfully',
+          transaction,
+          ticket: updatedTicket
+        });
+      }
+
+      // Real Supabase mode
       // In real scenario, verify signature here
 
       // Fetch transaction
@@ -172,6 +239,16 @@ const PaymentController = {
       const userId = req.user.id;
       const { ticketId } = req.params;
 
+      if (!hasRealSupabase) {
+        // Mock mode: get transactions
+        const transactions = mockTransactions
+          .filter(t => t.ticket_id === parseInt(ticketId) && t.user_id === userId)
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        return res.status(200).json({ transactions });
+      }
+
+      // Real Supabase mode
       const { data: transactions, error } = await supabase
         .from('transactions')
         .select('*')

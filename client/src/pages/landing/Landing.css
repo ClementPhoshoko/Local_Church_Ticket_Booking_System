@@ -32,6 +32,24 @@
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 
+[data-theme="dark"] .tabs-box {
+  background: var(--color-bg-elevated);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .tabs-box .tab {
+  color: var(--color-text-tertiary);
+}
+
+[data-theme="dark"] .tabs-box .tab:hover {
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .tabs-box .tab.active {
+  color: var(--color-gold);
+  border-bottom-color: var(--color-gold);
+}
+
 /* decorative circle accents in hero */
 .landing-hero::before,
 .landing-hero::after {
@@ -128,6 +146,35 @@
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
+}
+
+.tabs-box {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.tabs-box .tabs-container {
+  justify-content: center;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.tabs-box .tab {
+  color: var(--color-text-tertiary);
+  border-bottom: 2px solid transparent;
+}
+
+.tabs-box .tab:hover {
+  color: var(--color-navy);
+}
+
+.tabs-box .tab.active {
+  color: var(--color-gold);
+  border-bottom-color: var(--color-gold);
 }
 
 .sign-out-btn {

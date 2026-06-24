@@ -1,4 +1,4 @@
-const { supabase, supabaseAdmin } = require('../config/supabase');
+const { supabase, supabaseAdmin, hasRealSupabase, mockPlans } = require('../config/supabase');
 
 function getUserFriendlyError(error) {
   if (error && error.message) {
@@ -19,6 +19,13 @@ const PlanController = {
   // List all active plans (for regular users)
   list: async (req, res) => {
     try {
+      if (!hasRealSupabase) {
+        // Mock mode: return active plans
+        const plans = mockPlans.filter(p => p.is_active);
+        return res.status(200).json({ plans });
+      }
+
+      // Real Supabase mode
       const { data: plans, error } = await supabase
         .from('ticket_plans')
         .select('*')
@@ -39,7 +46,17 @@ const PlanController = {
   get: async (req, res) => {
     try {
       const { id } = req.params;
+
+      if (!hasRealSupabase) {
+        // Mock mode: get plan
+        const plan = mockPlans.find(p => p.id === parseInt(id) && p.is_active);
+        if (!plan) {
+          return res.status(404).json({ error: 'Plan not found' });
+        }
+        return res.status(200).json({ plan });
+      }
       
+      // Real Supabase mode
       const { data: plan, error } = await supabase
         .from('ticket_plans')
         .select('*')
@@ -61,6 +78,12 @@ const PlanController = {
   // Admin: List all plans (including inactive)
   listAll: async (req, res) => {
     try {
+      if (!hasRealSupabase) {
+        // Mock mode: return all plans
+        return res.status(200).json({ plans: mockPlans });
+      }
+
+      // Real Supabase mode
       const { data: plans, error } = await supabaseAdmin
         .from('ticket_plans')
         .select('*')
@@ -87,6 +110,23 @@ const PlanController = {
         return res.status(400).json({ error: 'Name and price are required' });
       }
 
+      if (!hasRealSupabase) {
+        // Mock mode: create plan
+        const plan = {
+          id: mockPlans.length + 1,
+          name,
+          description,
+          price,
+          currency,
+          is_active,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        mockPlans.push(plan);
+        return res.status(201).json({ message: 'Plan created successfully', plan });
+      }
+
+      // Real Supabase mode
       const { data: plan, error } = await supabaseAdmin
         .from('ticket_plans')
         .insert({
@@ -117,6 +157,24 @@ const PlanController = {
       const { id } = req.params;
       const { name, description, price, currency, is_active } = req.body;
 
+      if (!hasRealSupabase) {
+        // Mock mode: update plan
+        const plan = mockPlans.find(p => p.id === parseInt(id));
+        if (!plan) {
+          return res.status(404).json({ error: 'Plan not found' });
+        }
+
+        if (name !== undefined) plan.name = name;
+        if (description !== undefined) plan.description = description;
+        if (price !== undefined) plan.price = price;
+        if (currency !== undefined) plan.currency = currency;
+        if (is_active !== undefined) plan.is_active = is_active;
+        plan.updated_at = new Date().toISOString();
+
+        return res.status(200).json({ message: 'Plan updated successfully', plan });
+      }
+
+      // Real Supabase mode
       const updates = {};
       if (name !== undefined) updates.name = name;
       if (description !== undefined) updates.description = description;
@@ -148,6 +206,19 @@ const PlanController = {
     try {
       const { id } = req.params;
 
+      if (!hasRealSupabase) {
+        // Mock mode: deactivate plan
+        const plan = mockPlans.find(p => p.id === parseInt(id));
+        if (!plan) {
+          return res.status(404).json({ error: 'Plan not found' });
+        }
+        plan.is_active = false;
+        plan.updated_at = new Date().toISOString();
+
+        return res.status(200).json({ message: 'Plan deactivated successfully', plan });
+      }
+
+      // Real Supabase mode
       const { data: plan, error } = await supabaseAdmin
         .from('ticket_plans')
         .update({ is_active: false })

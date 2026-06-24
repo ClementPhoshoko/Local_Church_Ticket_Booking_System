@@ -1,4 +1,4 @@
-const { supabase, supabaseAdmin } = require('../config/supabase');
+const { supabase, supabaseAdmin, hasRealSupabase, mockPlans, mockTickets, mockTransactions, mockProfiles, mockUsers } = require('../config/supabase');
 
 function getUserFriendlyError(error) {
   if (error && error.message) {
@@ -26,6 +26,32 @@ const TicketController = {
         return res.status(400).json({ error: 'Plan ID is required' });
       }
 
+      if (!hasRealSupabase) {
+        // Mock mode: create ticket
+        const plan = mockPlans.find(p => p.id === plan_id && p.is_active);
+        if (!plan) {
+          return res.status(404).json({ error: 'Plan not found or inactive' });
+        }
+
+        const ticket = {
+          id: mockTickets.length + 1,
+          user_id: userId,
+          plan_id: plan_id,
+          status: 'pending',
+          unique_code: `CKT-${Date.now().toString(36).toUpperCase()}`,
+          booked_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          ticket_plans: plan
+        };
+        mockTickets.push(ticket);
+
+        return res.status(201).json({
+          message: 'Ticket created successfully',
+          ticket
+        });
+      }
+
+      // Real Supabase mode
       // First check if plan exists and is active
       const { data: plan, error: planError } = await supabase
         .from('ticket_plans')
@@ -68,6 +94,20 @@ const TicketController = {
     try {
       const userId = req.user.id;
 
+      if (!hasRealSupabase) {
+        // Mock mode: list tickets
+        const tickets = mockTickets
+          .filter(t => t.user_id === userId)
+          .map(t => ({
+            ...t,
+            ticket_plans: mockPlans.find(p => p.id === t.plan_id)
+          }))
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        return res.status(200).json({ tickets });
+      }
+
+      // Real Supabase mode
       const { data: tickets, error } = await supabase
         .from('tickets')
         .select('*, ticket_plans(*)')
@@ -92,6 +132,22 @@ const TicketController = {
       const userId = req.user.id;
       const { id } = req.params;
 
+      if (!hasRealSupabase) {
+        // Mock mode: get ticket
+        const ticket = mockTickets.find(t => t.id === parseInt(id) && t.user_id === userId);
+        if (!ticket) {
+          return res.status(404).json({ error: 'Ticket not found' });
+        }
+
+        return res.status(200).json({
+          ticket: {
+            ...ticket,
+            ticket_plans: mockPlans.find(p => p.id === ticket.plan_id)
+          }
+        });
+      }
+
+      // Real Supabase mode
       const { data: ticket, error } = await supabase
         .from('tickets')
         .select('*, ticket_plans(*)')
@@ -116,6 +172,30 @@ const TicketController = {
       const userId = req.user.id;
       const { id } = req.params;
 
+      if (!hasRealSupabase) {
+        // Mock mode: cancel ticket
+        const existingTicket = mockTickets.find(t => t.id === parseInt(id) && t.user_id === userId);
+        if (!existingTicket) {
+          return res.status(404).json({ error: 'Ticket not found' });
+        }
+
+        if (existingTicket.status !== 'confirmed') {
+          return res.status(400).json({ error: 'Only confirmed tickets can be cancelled' });
+        }
+
+        existingTicket.status = 'cancelled';
+        existingTicket.cancelled_at = new Date().toISOString();
+
+        return res.status(200).json({
+          message: 'Ticket cancelled successfully',
+          ticket: {
+            ...existingTicket,
+            ticket_plans: mockPlans.find(p => p.id === existingTicket.plan_id)
+          }
+        });
+      }
+
+      // Real Supabase mode
       // First check if ticket exists
       const { data: existingTicket, error: fetchError } = await supabase
         .from('tickets')

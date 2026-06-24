@@ -1,0 +1,389 @@
+/* Payment Component Styles */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 40, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: var(--color-bg-elevated);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--color-border);
+}
+
+/* navy accent bar at top of modal */
+.modal-content::before {
+  content: '';
+  display: block;
+  height: 5px;
+  background: linear-gradient(90deg, var(--color-navy-dark), var(--color-navy));
+  border-radius: 20px 20px 0 0;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 28px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--color-navy);
+  font-family: var(--font-family-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  font-size: 1.25rem;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1;
+  padding: 0;
+}
+
+.close-btn:hover {
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+  color: var(--color-white);
+}
+
+.modal-body {
+  padding: 24px 28px;
+}
+
+/* ── Ticket info rows ── */
+.ticket-info {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--color-border-light);
+  gap: 16px;
+}
+
+.info-row:nth-child(odd) {
+  background: var(--color-bg-alt);
+}
+
+.info-row:last-of-type {
+  border-bottom: none;
+}
+
+.label {
+  color: var(--color-text-tertiary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  flex-shrink: 0;
+}
+
+.value {
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  text-align: right;
+  font-weight: 500;
+}
+
+.code-value {
+  font-family: monospace;
+  font-size: 1.05rem;
+  color: var(--color-gold);
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+/* ── Status badges ── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+.status-pending {
+  background: rgba(221, 107, 32, 0.12);
+  color: var(--color-warning);
+  border: 1px solid rgba(221, 107, 32, 0.25);
+}
+
+.status-confirmed {
+  background: rgba(56, 161, 105, 0.1);
+  color: var(--color-success);
+  border: 1px solid rgba(56, 161, 105, 0.25);
+}
+
+.status-cancelled {
+  background: rgba(229, 62, 62, 0.1);
+  color: var(--color-error);
+  border: 1px solid rgba(229, 62, 62, 0.25);
+}
+
+.status-refunded {
+  background: rgba(107, 114, 128, 0.08);
+  color: var(--color-text-muted);
+  border: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+/* ── Payment section ── */
+.payment-section,
+.transactions-section {
+  background: var(--color-bg-alt);
+  padding: 20px 22px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  margin-bottom: 16px;
+}
+
+.payment-section h3,
+.transactions-section h3 {
+  color: var(--color-navy);
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  font-family: var(--font-family-serif);
+  letter-spacing: -0.1px;
+}
+
+.payment-section p {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin: 0 0 16px 0;
+  line-height: 1.55;
+}
+
+.pay-now-btn {
+  width: 100%;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-gold);
+  color: var(--color-white);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.12s;
+}
+
+.pay-now-btn:hover:not(:disabled) {
+  background: var(--color-gold-dark);
+  transform: translateY(-1px);
+}
+
+.pay-now-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.pay-now-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── Transactions ── */
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--color-bg-elevated);
+  border-radius: 8px;
+  border: 1px solid var(--color-border-light);
+  gap: 12px;
+}
+
+.tx-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tx-gateway {
+  color: var(--color-text-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.tx-status {
+  padding: 3px 8px;
+  font-size: 0.72rem;
+}
+
+.tx-amount {
+  color: var(--color-gold);
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: -0.3px;
+}
+
+.tx-date {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  text-align: right;
+}
+
+/* ── Modal footer ── */
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 18px 28px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-alt);
+  border-radius: 0 0 20px 20px;
+}
+
+.cancel-ticket-btn,
+.close-modal-btn {
+  padding: 10px 22px;
+  border-radius: 9px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.1px;
+}
+
+.cancel-ticket-btn {
+  border: 1px solid rgba(229, 62, 62, 0.4);
+  background: transparent;
+  color: var(--color-error);
+}
+
+.cancel-ticket-btn:hover:not(:disabled) {
+  background: rgba(229, 62, 62, 0.08);
+  border-color: var(--color-error);
+}
+
+.cancel-ticket-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.close-modal-btn {
+  border: none;
+  background: var(--color-navy);
+  color: var(--color-white);
+}
+
+.close-modal-btn:hover {
+  background: var(--color-navy-light);
+}
+
+/* Dark Mode */
+[data-theme="dark"] .modal-content {
+  background: var(--color-bg-elevated);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .modal-header h2 {
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .label {
+  color: var(--color-text-tertiary);
+}
+
+[data-theme="dark"] .value {
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .payment-section h3,
+[data-theme="dark"] .transactions-section h3 {
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .tx-gateway {
+  color: var(--color-text-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-content {
+    max-width: 100%;
+    border-radius: 16px;
+  }
+
+  .modal-content::before {
+    border-radius: 16px 16px 0 0;
+  }
+
+  .modal-header {
+    padding: 18px 20px 16px;
+  }
+
+  .modal-body {
+    padding: 18px 20px;
+  }
+
+  .modal-footer {
+    padding: 14px 20px;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .value {
+    text-align: left;
+  }
+
+  .transaction-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .tx-date {
+    text-align: left;
+  }
+}
