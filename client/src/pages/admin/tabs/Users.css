@@ -191,10 +191,7 @@
 }
 
 .users_active-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-2);
-  margin-bottom: var(--spacing-6);
+  display: none;
 }
 
 .users_active-filter-tag {

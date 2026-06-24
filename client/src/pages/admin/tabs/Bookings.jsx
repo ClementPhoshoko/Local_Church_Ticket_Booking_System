@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useAdminBookings } from '@/hooks'
 import Loading from '@/components/loading/Loading'
 import './Bookings.css'
@@ -13,6 +13,21 @@ function Bookings({ onStatusChange }) {
   })
   const [showPlanDropdown, setShowPlanDropdown] = useState(false)
   const [showStatusDropdown, setShowStatusDropdown] = useState(false)
+  const dropdownRef = useRef(null)
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowPlanDropdown(false)
+        setShowStatusDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   // Get unique plan names from bookings
   const uniquePlans = [...new Set(bookings.map(b => b.plan_name).filter(Boolean))]
@@ -27,6 +42,8 @@ function Bookings({ onStatusChange }) {
         [type]: isSelected ? current.filter(v => v !== value) : [...current, value]
       }
     })
+    setShowPlanDropdown(false)
+    setShowStatusDropdown(false)
   }
 
   const clearFilter = (type) => {
@@ -77,7 +94,7 @@ function Bookings({ onStatusChange }) {
       </div>
 
       {/* Filters Section */}
-      <div className="bookings_filters-container">
+      <div className="bookings_filters-container" ref={dropdownRef}>
         <div className="bookings_filters-left">
           <span className="bookings_filters-label">Filters:</span>
           

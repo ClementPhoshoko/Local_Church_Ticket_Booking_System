@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { useAdminPlans } from '@/hooks'
 import Loading from '@/components/loading/Loading'
 import './Plans.css'
@@ -10,6 +10,20 @@ function Plans() {
   const [statusFilters, setStatusFilters] = useState(['active'])
   const [priceRange, setPriceRange] = useState({ min: '', max: '' })
   const [openDropdown, setOpenDropdown] = useState(null)
+  const dropdownRef = useRef(null)
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
   
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -96,6 +110,7 @@ function Plans() {
     } else {
       setStatusFilters([...statusFilters, status])
     }
+    setOpenDropdown(null)
   }
 
   const toggleDropdown = (dropdownName) => {
@@ -131,7 +146,7 @@ function Plans() {
       </div>
 
       {/* Filters Container */}
-      <div className="plans_filters-container">
+      <div className="plans_filters-container" ref={dropdownRef}>
         <div className="plans_filters-left">
           <span className="plans_filters-label">Filters:</span>
           

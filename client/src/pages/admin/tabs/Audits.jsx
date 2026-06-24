@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { useAdminAuditLogs } from '@/hooks'
 import Loading from '@/components/loading/Loading'
 import './Audits.css'
@@ -11,6 +11,20 @@ function Audits() {
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [openDropdown, setOpenDropdown] = useState(null)
+  const dropdownRef = useRef(null)
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const filteredLogs = useMemo(() => {
     return auditLogs.filter(log => {
@@ -47,6 +61,7 @@ function Audits() {
     } else {
       setCategoryFilters([...categoryFilters, category])
     }
+    setOpenDropdown(null)
   }
 
   const toggleActionFilter = (action) => {
@@ -55,6 +70,7 @@ function Audits() {
     } else {
       setActionFilters([...actionFilters, action])
     }
+    setOpenDropdown(null)
   }
 
   const clearAllFilters = () => {
@@ -107,7 +123,7 @@ function Audits() {
         </div>
       </div>
 
-      <div className="audits_filters-container">
+      <div className="audits_filters-container" ref={dropdownRef}>
         <div className="audits_filters-left">
           <span className="audits_filters-label">Filters:</span>
 
@@ -370,7 +386,7 @@ function Audits() {
                         {log.action || 'Unknown'}
                       </td>
                       <td className="audits_user-cell">
-                        {log.changed_by ? (log.changed_by.substring(0, 12) + '...') : 'System'}
+                        {log.changed_by ? (String(log.changed_by).substring(0, 12) + '...') : 'System'}
                       </td>
                       <td className="audits_timestamp-cell">
                         {formatTimestamp(log.changed_at)}
