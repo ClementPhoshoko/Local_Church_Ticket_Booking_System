@@ -112,13 +112,38 @@ function Audits() {
     })
   }
 
+  const formatValue = (value) => {
+    if (value === null || value === undefined) return 'None'
+    if (typeof value === 'object') return JSON.stringify(value)
+    return String(value)
+  }
+
+  const renderDataList = (data, label) => {
+    if (!data) return null
+    const entries = Object.entries(data)
+    if (entries.length === 0) return null
+    return (
+      <div className="audits-data-section">
+        <div className="audits-data-label">{label}</div>
+        <div className="audits-data-list">
+          {entries.map(([key, value]) => (
+            <div key={key} className="audits-data-item">
+              <span className="audits-data-key">{key}:</span>
+              <span className="audits-data-value">{formatValue(value)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="audits_tab">
       <div className="audits_tab-header">
         <div className="audits_header-content">
           <h1 className="audits_audit-title">Audit Logs</h1>
           <p className="audits_advisory-text">
-            Track all system activities and changes. Filter by category, action, or date range.
+            Track all system activities and changes to monitor user actions and system modifications. Filter logs by category, action type, and date range to quickly find specific events and maintain transparency across your church ticket booking system.
           </p>
         </div>
       </div>
@@ -398,9 +423,10 @@ function Audits() {
                         {log.old_data || log.new_data ? (
                           <details className="audits_metadata-toggle">
                             <summary>View</summary>
-                            <pre className="audits_metadata-content">
-                              {JSON.stringify({ old: log.old_data, new: log.new_data }, null, 2)}
-                            </pre>
+                            <div className="audits_metadata-content">
+                              {renderDataList(log.old_data, 'Old Data')}
+                              {renderDataList(log.new_data, 'New Data')}
+                            </div>
                           </details>
                         ) : '-'}
                       </td>

@@ -50,8 +50,7 @@ function Users() {
         <div className="users_header-content">
           <h1 className="users_users-title">All Users</h1>
           <p className="users_advisory-text">
-            Manage all registered users in the system. Search by name, email, or contact number, 
-            and filter by registration date range.
+            Manage all registered users in your church ticket booking system with comprehensive user management tools. Search by name, email, or contact number, and filter by registration date range to easily locate and review user accounts for your community events.
           </p>
         </div>
       </div>

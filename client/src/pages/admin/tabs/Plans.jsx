@@ -140,7 +140,7 @@ function Plans() {
         <div className="plans_header-content">
           <h1 className="plans_plans-title">All Plans</h1>
           <p className="plans_advisory-text">
-            Create and manage ticket plans for your church events. You can edit, deactivate, and filter plans.
+            Create and manage ticket plans for your church events with flexible options for different attendee groups. Edit existing plans, deactivate outdated ones, and filter by status or price range to keep your event offerings organized and up-to-date for your congregation.
           </p>
         </div>
       </div>

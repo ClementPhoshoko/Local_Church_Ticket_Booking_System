@@ -88,7 +88,7 @@ function Bookings({ onStatusChange }) {
         <div className="bookings_header-content">
           <h1 className="bookings_booking-title">All Bookings</h1>
           <p className="bookings_advisory-text">
-            Manage all ticket bookings in one place. You can view booking details, update statuses, and filter by plan or status.
+            Manage all ticket bookings in one centralized location with complete control over your church event reservations. View comprehensive booking details, update statuses in real-time, and filter by plan or status to efficiently organize and process ticket requests for your community.
           </p>
         </div>
       </div>
