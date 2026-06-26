@@ -1,1 +1,116 @@
 /* Tickets Tab Styles */
+.tickets-table {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: var(--color-navy);
+  color: white;
+}
+
+th,
+td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+th {
+  font-weight: var(--font-weight-semibold);
+}
+
+tbody tr:hover {
+  background-color: var(--color-bg-alt);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.status-pending {
+  background-color: rgba(221, 107, 32, 0.1);
+  color: var(--color-warning);
+}
+
+.status-confirmed {
+  background-color: rgba(56, 161, 105, 0.1);
+  color: var(--color-success);
+}
+
+.status-cancelled {
+  background-color: rgba(229, 62, 62, 0.1);
+  color: var(--color-error);
+}
+
+.status-refunded {
+  background-color: rgba(49, 130, 206, 0.1);
+  color: var(--color-info);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.code-btn,
+.view-btn,
+.pay-btn,
+.cancel-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.code-btn {
+  background-color: var(--color-border-light);
+  color: var(--color-navy);
+}
+
+.code-btn:hover {
+  background-color: var(--color-border);
+}
+
+.view-btn {
+  background-color: var(--color-border-light);
+  color: var(--color-navy);
+}
+
+.view-btn:hover {
+  background-color: var(--color-border);
+}
+
+.pay-btn {
+  background-color: var(--color-gold);
+  color: white;
+}
+
+.pay-btn:hover {
+  background-color: var(--color-gold-dark);
+}
+
+.cancel-btn {
+  background-color: var(--color-error);
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #c93838;
+}
+
+.cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

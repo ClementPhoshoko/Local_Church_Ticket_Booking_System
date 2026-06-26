@@ -23,17 +23,21 @@ function AvailablePlans({ plans, plansLoading, plansError, refetchPlans, handleB
           ) : (
             plans.map(plan => (
               <div key={plan.id} className="plan-card">
-                <h3>{plan.name}</h3>
-                {plan.description && <p>{plan.description}</p>}
-                <div className="plan-price">
-                  {plan.currency} {plan.price.toFixed(2)}
+                <div className="plan-info">
+                  <div className="plan-name">{plan.name}</div>
+                  {plan.description && <p className="plan-desc">{plan.description}</p>}
+                  <div className="plan-price">
+                    {plan.currency} {plan.price.toFixed(2)}
+                  </div>
                 </div>
-                <button
-                  className="buy-btn"
-                  onClick={() => handleBuyTicket(plan.id)}
-                >
-                  Buy Ticket
-                </button>
+                <div className="plan-actions">
+                  <button
+                    className="primary-btn"
+                    onClick={() => handleBuyTicket(plan.id)}
+                  >
+                    Buy Ticket
+                  </button>
+                </div>
               </div>
             ))
           )}
