@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { adminApi } from '../services/api'
+import { adminApi, plansApi } from '../services/api'
 
 export function useAdminPlans() {
   const [plans, setPlans] = useState([])
@@ -19,6 +19,35 @@ export function useAdminPlans() {
     }
   }
 
+  const createPlan = async (planData) => {
+    try {
+      await plansApi.create(planData)
+      await fetchPlans()
+    } catch (err) {
+      setError(err.message)
+      throw err
+    }
+  }
+
+  const updatePlan = async (planId, planData) => {
+    try {
+      await plansApi.update(planId, planData)
+      await fetchPlans()
+    } catch (err) {
+      setError(err.message)
+      throw err
+    }
+  }
+
+  const deactivatePlan = async (planId) => {
+    try {
+      await updatePlan(planId, { is_active: false })
+    } catch (err) {
+      setError(err.message)
+      throw err
+    }
+  }
+
   useEffect(() => {
     fetchPlans()
   }, [])
@@ -27,6 +56,9 @@ export function useAdminPlans() {
     plans,
     loading,
     error,
+    createPlan,
+    updatePlan,
+    deactivatePlan,
     refetch: fetchPlans
   }
 }

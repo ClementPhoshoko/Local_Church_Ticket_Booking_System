@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { adminApi } from '../services/api'
 
 export function useAdminAuditLogs(page = 1, limit = 20) {
-  const [logs, setLogs] = useState([])
+  const [auditLogs, setAuditLogs] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0 })
@@ -12,8 +12,8 @@ export function useAdminAuditLogs(page = 1, limit = 20) {
       setLoading(true)
       setError(null)
       const data = await adminApi.getAuditLogs(page, limit)
-      setLogs(data.logs)
-      setPagination(data.pagination)
+      setAuditLogs(data.logs || [])
+      setPagination(data.pagination || { page, limit, total: 0 })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -26,7 +26,7 @@ export function useAdminAuditLogs(page = 1, limit = 20) {
   }, [page, limit])
 
   return {
-    logs,
+    auditLogs,
     loading,
     error,
     pagination,
